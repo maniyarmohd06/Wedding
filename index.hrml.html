@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maaz & Anha - Wedding Invitation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;500;600&family=Amiri:wght@400;700&family=Great+Vibes&display=swap" rel="stylesheet">
+  <!-- Include Canvas Confetti Library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    :root {
+      --bg-dark: #2a050d;
+      --bg-rose: #4a0d1a;
+      --gold: #d4af37;
+      --gold-light: #f3e5ab;
+      --text-white: #ffffff;
+      --text-muted: #d1b8c0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-white);
+      text-align: center;
+      overflow-x: hidden;
+    }
+
+    /* Video Intro Screen */
+    #intro-screen {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end; /* Aligns content toward bottom */
+      padding-bottom: 90px;     /* Positions text right below the seal stamp */
+      background: #000;
+      cursor: pointer;
+      transition: opacity 1s ease, visibility 1s ease;
+    }
+
+    #intro-screen video {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0.85;
+    }
+
+    .intro-content {
+      position: relative;
+      z-index: 10;
+      color: var(--gold-light);
+      font-family: 'Cinzel', serif;
+      text-shadow: 0 4px 10px rgba(0,0,0,0.9);
+      pointer-events: none;
+    }
+
+    .intro-content h2 {
+      font-size: 1.8rem;
+      letter-spacing: 4px;
+      margin-bottom: 8px;
+    }
+
+    .intro-content p {
+      font-size: 0.95rem;
+      letter-spacing: 3px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.05); }
+    }
+
+    /* Bottom-Right Corner Mute Button */
+    #audio-toggle {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      z-index: 1500;
+      background: rgba(42, 5, 13, 0.85);
+      border: 1px solid var(--gold);
+      color: var(--gold-light);
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+      backdrop-filter: blur(5px);
+      transition: all 0.3s ease;
+    }
+
+    #audio-toggle:hover {
+      background: var(--gold);
+      color: var(--bg-dark);
+      transform: scale(1.08);
+    }
+
+    /* Main Container with bg.png Background */
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      min-height: 100vh;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 40px;
+      position: relative;
+      background-color: var(--bg-dark);
+      background-image: 
+        linear-gradient(180deg, rgba(42, 5, 13, 0.75) 0%, rgba(74, 13, 26, 0.8) 50%, rgba(42, 5, 13, 0.75) 100%),
+        url("bg.png");
+      background-repeat: repeat;
+      background-size: cover;
+      background-position: center;
+    }
+
+    /* Shared Card Frame Styles */
+    .card-frame {
+      width: 100%;
+      background: rgba(35, 6, 12, 0.65);
+      border: 1px solid rgba(212, 175, 55, 0.45);
+      border-radius: 20px;
+      padding: 35px 22px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(212, 175, 55, 0.1);
+      backdrop-filter: blur(8px);
+    }
+
+    /* Clickable Image Styles */
+    .clickable-img {
+      cursor: pointer;
+      transition: transform 0.3s ease, filter 0.3s ease;
+    }
+
+    .clickable-img:hover {
+      transform: scale(1.02);
+      filter: brightness(1.08);
+    }
+
+    .main-logo {
+      width: 110px;
+      height: auto;
+      margin: 0 auto 20px auto;
+      display: block;
+    }
+
+    .couple-name {
+      font-family: 'Great Vibes', cursive;
+      font-size: 3.2rem;
+      color: var(--gold-light);
+      letter-spacing: 1px;
+      line-height: 1.2;
+      font-weight: 400;
+    }
+
+    .divider-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      margin: 15px 0;
+    }
+
+    .divider-line {
+      height: 1px;
+      width: 50px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .ampersand {
+      font-family: 'Cinzel', serif;
+      font-size: 1.4rem;
+      color: var(--gold);
+    }
+
+    .arabic-text {
+      font-family: 'Amiri', serif;
+      font-size: 2.3rem;
+      color: var(--gold);
+      margin: 15px 0 10px 0;
+    }
+
+    .verse {
+      font-style: italic;
+      color: var(--gold-light);
+      font-size: 0.95rem;
+      margin-bottom: 10px;
+      line-height: 1.6;
+    }
+
+    .scroll-hint {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 20px;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(6px); }
+      60% { transform: translateY(3px); }
+    }
+
+    /* Scratch Card Section */
+    .scratch-section {
+      width: 100%;
+      background: rgba(35, 6, 12, 0.65);
+      border: 1px solid rgba(212, 175, 55, 0.45);
+      border-radius: 20px;
+      padding: 35px 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(212, 175, 55, 0.1);
+      backdrop-filter: blur(8px);
+    }
+
+    .scratch-tag {
+      font-size: 0.75rem;
+      letter-spacing: 3px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    .scratch-title {
+      font-family: 'Great Vibes', cursive;
+      font-size: 2.8rem;
+      color: var(--gold-light);
+      margin-bottom: 8px;
+    }
+
+    .scratch-sub {
+      font-style: italic;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 30px;
+    }
+
+    .scratch-cards-container {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+
+    .scratch-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .col-label {
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .card-wrapper {
+      position: relative;
+      width: 95px;
+      height: 125px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      background: #ffffff;
+      user-select: none;
+    }
+
+    .hidden-value {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cinzel', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--bg-rose);
+      background: #ffffff;
+    }
+
+    canvas.scratch-canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      cursor: pointer;
+      touch-action: none;
+    }
+
+    /* Introduction Card Specifics */
+    .welcome-tag {
+      font-size: 0.75rem;
+      letter-spacing: 4px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    .card-title {
+      font-family: 'Great Vibes', cursive;
+      font-size: 3.2rem;
+      color: var(--gold-light);
+      margin-bottom: 25px;
+      font-weight: 400;
+    }
+
+    .illustration-wrapper {
+      width: 100%;
+      max-width: 320px;
+      margin: 0 auto 25px auto;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+
+    .cutie-img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .story-tag {
+      font-style: italic;
+      color: var(--gold-light);
+      font-size: 0.95rem;
+      margin-bottom: 15px;
+    }
+
+    .poetic-text {
+      font-style: italic;
+      color: var(--text-white);
+      font-size: 0.9rem;
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+
+    .poetic-text span {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .sacred-bond {
+      font-style: italic;
+      color: var(--gold-light);
+      font-size: 0.95rem;
+      margin-bottom: 25px;
+    }
+
+    .invite-footer {
+      font-size: 0.8rem;
+      letter-spacing: 3px;
+      color: var(--gold);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    /* Festivities / Nikah Card Specifics */
+    .festivities-tag {
+      font-size: 0.75rem;
+      letter-spacing: 3px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    .festivities-title {
+      font-family: 'Great Vibes', cursive;
+      font-size: 2.8rem;
+      color: var(--gold-light);
+      margin-bottom: 20px;
+    }
+
+    .nikah-heading {
+      font-family: 'Great Vibes', cursive;
+      font-size: 2.5rem;
+      color: var(--gold-light);
+      margin-bottom: 10px;
+    }
+
+    .nikah-date {
+      font-size: 0.95rem;
+      letter-spacing: 1px;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .nikah-time {
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 25px;
+    }
+
+    .invi-wrapper {
+      width: 100%;
+      max-width: 320px;
+      margin: 0 auto;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+
+    .invi-img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* Location Card Specifics */
+    .location-verse {
+      font-style: italic;
+      color: var(--gold-light);
+      font-size: 0.95rem;
+      margin: 15px 0;
+      line-height: 1.6;
+    }
+
+    .location-subtext {
+      font-style: italic;
+      color: var(--text-white);
+      font-size: 0.9rem;
+      line-height: 1.7;
+      margin: 20px 0;
+    }
+
+    .location-subtext span {
+      display: block;
+    }
+
+    .honored-text {
+      font-style: italic;
+      color: var(--gold-light);
+      font-size: 0.95rem;
+      margin-bottom: 25px;
+    }
+
+    .address-text {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 25px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 12px 30px;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      text-decoration: none;
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border-radius: 25px;
+      transition: all 0.3s ease;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background: var(--gold);
+      color: var(--bg-dark);
+    }
+
+    /* Live Countdown Section */
+    .countdown-date-sub {
+      font-size: 0.85rem;
+      letter-spacing: 3px;
+      color: var(--gold);
+      margin: 10px 0 25px 0;
+    }
+
+    .timer-grid {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin: 15px 0 10px 0;
+    }
+
+    .timer-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 65px;
+    }
+
+    .timer-number {
+      font-family: 'Cinzel', serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--gold-light);
+      border-bottom: 1px solid rgba(212, 175, 55, 0.4);
+      padding-bottom: 4px;
+      min-width: 55px;
+    }
+
+    .timer-label {
+      font-size: 0.65rem;
+      letter-spacing: 2px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-top: 8px;
+    }
+
+    /* Closing Footer Card */
+    .footer-card {
+      width: 100%;
+      background: rgba(45, 10, 18, 0.85);
+      border: 1px solid rgba(212, 175, 55, 0.45);
+      border-radius: 20px;
+      padding: 40px 22px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(212, 175, 55, 0.1);
+      backdrop-filter: blur(8px);
+    }
+
+    .footer-tagline {
+      font-family: 'Great Vibes', cursive;
+      font-size: 2.6rem;
+      color: var(--gold-light);
+      margin-bottom: 25px;
+    }
+
+    .regards-tag {
+      font-size: 0.75rem;
+      letter-spacing: 3px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .regards-names {
+      font-family: 'Great Vibes', cursive;
+      font-size: 2.8rem;
+      color: var(--gold-light);
+      margin-bottom: 25px;
+    }
+
+    .crafted-by {
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .crafted-by span {
+      color: #e25555;
+    }
+
+    /* Image Lightbox Modal */
+    #lightbox-modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.9);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(5px);
+    }
+
+    #lightbox-img {
+      max-width: 90vw;
+      max-height: 85vh;
+      border-radius: 12px;
+      border: 1px solid var(--gold);
+      box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+      object-fit: contain;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 20px;
+      right: 25px;
+      color: var(--gold-light);
+      font-size: 2.5rem;
+      font-weight: bold;
+      cursor: pointer;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Audio Background Element -->
+  <audio id="bg-music" loop preload="auto">
+    <source src="nasheed.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- Corner Mute / Unmute Button (Bottom Right) -->
+  <button id="audio-toggle" onclick="toggleAudio()" aria-label="Toggle Audio">🔊</button>
+
+  <!-- Video Intro Screen -->
+  <div id="intro-screen" onclick="handleTapToOpen()">
+    <video id="bg-video" preload="auto" playsinline>
+      <source src="intro.mp4" type="video/mp4">
+    </video>
+    <div class="intro-content" id="tap-prompt">
+      <h2>M & A</h2>
+      <p>TAP TO OPEN</p>
+    </div>
+  </div>
+
+  <!-- Image Lightbox Modal -->
+  <div id="lightbox-modal" onclick="closeLightbox()">
+    <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+    <img id="lightbox-img" src="" alt="Full View">
+  </div>
+
+  <!-- Main Content -->
+  <div class="container">
+    <!-- Card 1: Name & Logo Card -->
+    <div class="card-frame">
+      <img src="logo.png" alt="Maaz & Anha Logo" class="main-logo clickable-img" onclick="openLightbox(this.src)">
+      
+      <div class="couple-name">Maaz</div>
+      <div class="divider-row">
+        <span class="divider-line"></span>
+        <span class="ampersand">&</span>
+        <span class="divider-line"></span>
+      </div>
+      <div class="couple-name">Anha</div>
+
+      <div class="arabic-text">بِسْمِ اللَّهِ</div>
+      
+      <p class="verse">
+        "And He placed between you affection and mercy."<br>
+        <small>— Quran 30:21</small>
+      </p>
+
+      <div class="scroll-hint">↓ Scroll to reveal date ↓</div>
+    </div>
+
+    <!-- Card 2: Interactive Scratch to Reveal Date -->
+    <div class="scratch-section">
+      <div class="scratch-tag">THE DATE</div>
+      <div class="scratch-title">Save the Date</div>
+      <div class="scratch-sub">Scratch below to reveal our wedding date</div>
+
+      <div class="scratch-cards-container">
+        <!-- MONTH -->
+        <div class="scratch-col">
+          <div class="col-label">MONTH</div>
+          <div class="card-wrapper">
+            <div class="hidden-value">NOV</div>
+            <canvas class="scratch-canvas" id="canvas-month"></canvas>
+          </div>
+        </div>
+
+        <!-- DAY -->
+        <div class="scratch-col">
+          <div class="col-label">DAY</div>
+          <div class="card-wrapper">
+            <div class="hidden-value">11</div>
+            <canvas class="scratch-canvas" id="canvas-day"></canvas>
+          </div>
+        </div>
+
+        <!-- YEAR -->
+        <div class="scratch-col">
+          <div class="col-label">YEAR</div>
+          <div class="card-wrapper">
+            <div class="hidden-value">2026</div>
+            <canvas class="scratch-canvas" id="canvas-year"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="scroll-hint">↓ Scroll for introduction ↓</div>
+    </div>
+
+    <!-- Card 3: Welcome Introduction with cutie.png -->
+    <div class="card-frame">
+      <div class="welcome-tag">WELCOME</div>
+      <div class="card-title">Introduction</div>
+
+      <div class="illustration-wrapper">
+        <img src="cutie.png" alt="Bridal Couple Illustration" class="cutie-img clickable-img" onclick="openLightbox(this.src)">
+      </div>
+
+      <div class="story-tag">A story written by His will</div>
+      
+      <div class="arabic-text">بِسْمِ اللَّهِ</div>
+
+      <div class="poetic-text">
+        <span>Some stories begin with a prayer,</span>
+        <span>some promises begin with faith,</span>
+        <span>and some beautiful journeys begin with Bismillah.</span>
+      </div>
+
+      <div class="sacred-bond">A celebration of a sacred bond awaits...</div>
+
+      <div class="invite-footer">YOU ARE CORDIALLY INVITED</div>
+
+      <div class="scroll-hint">↓ Scroll for festivities ↓</div>
+    </div>
+
+    <!-- Card 4: Festivities & Nikah with invi.jpg -->
+    <div class="card-frame">
+      <div class="festivities-tag">THE CELEBRATIONS UNFOLD</div>
+      <div class="festivities-title">Festivities</div>
+
+      <div class="nikah-heading">Nikah</div>
+      <div class="nikah-date">Wednesday &nbsp;|&nbsp; 11 &nbsp;|&nbsp; Nov 2026</div>
+      <div class="nikah-time">11:30 AM</div>
+
+      <div class="invi-wrapper">
+        <img src="invi.jpg" alt="Nikah Invitation Frame" class="invi-img clickable-img" onclick="openLightbox(this.src)">
+      </div>
+
+      <div class="scroll-hint">↓ Scroll for location ↓</div>
+    </div>
+
+    <!-- Card 5: Venue Location & Directions -->
+    <div class="card-frame">
+      <div class="arabic-text">وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً</div>
+      
+      <p class="location-verse">
+        "And He placed between you affection<br>
+        and mercy." — Quran 30:21
+      </p>
+
+      <div class="location-subtext">
+        <span>A union blessed by Allah, a bond built</span>
+        <span>on love and mercy, and a journey we</span>
+        <span>begin with Bismillah.</span>
+      </div>
+
+      <div class="honored-text">
+        We would be honoured to have you join<br>
+        us on our special day.
+      </div>
+
+      <div class="address-text">
+        Sharai Mohalla, Shrivardhan
+      </div>
+
+      <a href="https://maps.google.com/?q=Sharai+Mohalla+Shrivardhan" target="_blank" class="btn">GET DIRECTIONS</a>
+
+      <div class="scroll-hint">↓ Scroll for countdown ↓</div>
+    </div>
+
+    <!-- Card 6: Live Time Countdown Card -->
+    <div class="card-frame">
+      <div class="nikah-heading">Nikah</div>
+      <div class="countdown-date-sub">11 &nbsp;·&nbsp; 11 &nbsp;·&nbsp; 2026</div>
+
+      <div class="timer-grid">
+        <div class="timer-box">
+          <span class="timer-number" id="days">00</span>
+          <span class="timer-label">DAYS</span>
+        </div>
+        <div class="timer-box">
+          <span class="timer-number" id="hours">00</span>
+          <span class="timer-label">HOURS</span>
+        </div>
+        <div class="timer-box">
+          <span class="timer-number" id="minutes">00</span>
+          <span class="timer-label">MINS</span>
+        </div>
+        <div class="timer-box">
+          <span class="timer-number" id="seconds">00</span>
+          <span class="timer-label">SECS</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-card">
+      <div class="footer-tagline">We can't wait to celebrate with you!</div>
+
+      <div class="regards-tag">WARM REGARDS,</div>
+      <div class="regards-names">Maaz & Anha</div>
+
+      <div class="crafted-by">CRAFTED WITH <span>♥</span> FOR  </div>
+      <div class="crafted-by">MAAZ BHAIJAN AND ANHA BHABHI'S WEDDING</div>
+      <div class="crafted-by">ㅤㅤㅤㅤㅤㅤㅤ</div>
+      
+      <div class="crafted-by">DESIGNED & DEVELOPED</div>
+      <div class="crafted-by"> BY MOHAMMAD NADEEM</div>
+    </div>
+  </div
+>
+  <script>
+    let isOpen = false;
+
+    function handleTapToOpen() {
+      if (isOpen) return;
+      isOpen = true;
+
+      const video = document.getElementById('bg-video');
+      const tapPrompt = document.getElementById('tap-prompt');
+      const introScreen = document.getElementById('intro-screen');
+      const music = document.getElementById('bg-music');
+
+      tapPrompt.style.display = 'none';
+      video.play();
+
+      music.play().catch(e => console.log("Audio playback error:", e));
+
+      video.onended = function() {
+        fadeOutIntro();
+      };
+
+      introScreen.onclick = fadeOutIntro;
+    }
+
+    function toggleAudio() {
+      const music = document.getElementById('bg-music');
+      const toggleBtn = document.getElementById('audio-toggle');
+      if (music.paused) {
+        music.play();
+        toggleBtn.innerText = '🔊';
+      } else {
+        music.pause();
+        toggleBtn.innerText = '🔇';
+      }
+    }
+
+    function fadeOutIntro() {
+      const introScreen = document.getElementById('intro-screen');
+      introScreen.style.opacity = '0';
+      window.scrollTo(0, 0);
+      setTimeout(() => {
+        introScreen.style.visibility = 'hidden';
+      }, 1000);
+    }
+
+    /* Lightbox Modal Logic */
+    function openLightbox(src) {
+      const modal = document.getElementById('lightbox-modal');
+      const modalImg = document.getElementById('lightbox-img');
+      modal.style.display = 'flex';
+      modalImg.src = src;
+    }
+
+    function closeLightbox() {
+      const modal = document.getElementById('lightbox-modal');
+      modal.style.display = 'none';
+    }
+
+    /* Live Countdown Script */
+    const targetDate = new Date("November 11, 2026 11:30:00").getTime();
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const distance = targetDate - now;
+
+      if (distance < 0) {
+        document.getElementById("days").innerText = "00";
+        document.getElementById("hours").innerText = "00";
+        document.getElementById("minutes").innerText = "00";
+        document.getElementById("seconds").innerText = "00";
+        return;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      document.getElementById("days").innerText = days < 10 ? '0' + days : days;
+      document.getElementById("hours").innerText = hours < 10 ? '0' + hours : hours;
+      document.getElementById("minutes").innerText = minutes < 10 ? '0' + minutes : minutes;
+      document.getElementById("seconds").innerText = seconds < 10 ? '0' + seconds : seconds;
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    /* Scratch Canvas & Confetti Logic */
+    let revealedCount = 0;
+    const revealedStatus = { 'canvas-month': false, 'canvas-day': false, 'canvas-year': false };
+
+    function initScratchCanvas(id) {
+      const canvas = document.getElementById(id);
+      const ctx = canvas.getContext('2d');
+      const rect = canvas.getBoundingClientRect();
+
+      canvas.width = rect.width * 2;
+      canvas.height = rect.height * 2;
+      ctx.scale(2, 2);
+
+      // Draw standard scratch foil color
+      ctx.fillStyle = '#a86b77';
+      ctx.fillRect(0, 0, rect.width, rect.height);
+
+      // Draw "SCRATCH" text on foil
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 11px Montserrat';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('SCRATCH', rect.width / 2, rect.height / 2);
+
+      let isDrawing = false;
+
+      function scratch(e) {
+        if (!isDrawing) return;
+        const bRect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        const x = clientX - bRect.left;
+        const y = clientY - bRect.top;
+
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.beginPath();
+        ctx.arc(x, y, 18, 0, Math.PI * 2);
+        ctx.fill();
+
+        checkRevealProgress(canvas, ctx, id);
+      }
+
+      function checkRevealProgress(canvasElem, context, canvasId) {
+        if (revealedStatus[canvasId]) return;
+
+        const imgData = context.getImageData(0, 0, canvasElem.width, canvasElem.height);
+        const pixels = imgData.data;
+        let transparentPixels = 0;
+
+        for (let i = 3; i < pixels.length; i += 4) {
+          if (pixels[i] === 0) {
+            transparentPixels++;
+          }
+        }
+
+        const percentage = transparentPixels / (pixels.length / 4);
+        if (percentage > 0.35) {
+          revealedStatus[canvasId] = true;
+          revealedCount++;
+          if (revealedCount === 3) {
+            launchConfetti();
+          }
+        }
+      }
+
+      canvas.addEventListener('mousedown', (e) => { isDrawing = true; scratch(e); });
+      canvas.addEventListener('mousemove', scratch);
+      canvas.addEventListener('mouseup', () => isDrawing = false);
+      canvas.addEventListener('mouseleave', () => isDrawing = false);
+
+      canvas.addEventListener('touchstart', (e) => { isDrawing = true; scratch(e); }, { passive: true });
+      canvas.addEventListener('touchmove', scratch, { passive: true });
+      canvas.addEventListener('touchend', () => isDrawing = false);
+    }
+
+    function launchConfetti() {
+      confetti({
+        particleCount: 130,
+        spread: 90,
+        origin: { y: 0.7 },
+        colors: ['#d4af37', '#f3e5ab', '#5c1422', '#ffffff']
+      });
+    }
+
+    window.addEventListener('load', () => {
+      initScratchCanvas('canvas-month');
+      initScratchCanvas('canvas-day');
+      initScratchCanvas('canvas-year');
+    });
+  </script>
+</body>
+</html>
